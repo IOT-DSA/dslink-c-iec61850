@@ -1,0 +1,15 @@
+.DS_Store
+.idea
+build
+modules/cmocka
+legion/
+.build/
+.packages
+test/dart/**/packages
+pubspec.lock
+.pub
+dists/
+.dslink.key
+.key
+nodes.json
+work/

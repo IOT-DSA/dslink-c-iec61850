@@ -1,0 +1,43 @@
+16a17
+> 
+64,77c65,77
+< #include_directories("${CMAKE_CURRENT_LIST_DIR}/sdk/include")
+< 
+< include_directories(${CMAKE_CURRENT_LIST_DIR}/config
+< 		${CMAKE_CURRENT_LIST_DIR}/src/common/inc
+< 		${CMAKE_CURRENT_LIST_DIR}/src/goose
+< 		${CMAKE_CURRENT_LIST_DIR}/src/sampled_values
+< 		${CMAKE_CURRENT_LIST_DIR}/src/hal/inc
+< 		${CMAKE_CURRENT_LIST_DIR}/src/iec61850/inc
+< 		${CMAKE_CURRENT_LIST_DIR}/src/iec61850/inc_private
+< 		${CMAKE_CURRENT_LIST_DIR}/src/mms/inc
+< 		${CMAKE_CURRENT_LIST_DIR}/src/mms/inc_private
+< 		${CMAKE_CURRENT_LIST_DIR}/src/mms/iso_mms/asn1c
+< 		${CMAKE_CURRENT_LIST_DIR}/src/logging)
+< 
+---
+> include_directories(
+>     ${CMAKE_CURRENT_BINARY_DIR}/config
+>     src/common/inc
+>     src/goose
+>     src/sampled_values
+>     src/hal/inc
+>     src/iec61850/inc
+>     src/iec61850/inc_private
+>     src/mms/inc
+>     src/mms/inc_private
+>     src/mms/iso_mms/asn1c
+>     src/logging
+> )
+121c121
+< configure_file(${CMAKE_CURRENT_LIST_DIR}/config/stack_config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config/stack_config.h)
+---
+> configure_file(config/stack_config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config/stack_config.h)
+124c124
+< 	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/examples)
+---
+> 	add_subdirectory(examples)
+127c127
+< add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src)
+---
+> add_subdirectory(src)
