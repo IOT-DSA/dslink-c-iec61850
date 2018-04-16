@@ -77,8 +77,9 @@ DSNode *getURCBFolderNode(DSNode *node) {
     DSNode *rcbFolderNode = NULL;
     if(serverNode) {
         rcbFolderNode = dslink_node_get_path(serverNode,URCB_FOLDER_NODE_KEY);
-        if(!rcbFolderNode)
+        if(!rcbFolderNode) {
             log_info("URCB Folder node couldn't be found!\n");
+        }
     }
 
     return rcbFolderNode;
@@ -88,8 +89,9 @@ DSNode *getBRCBFolderNode(DSNode *node) {
     DSNode *rcbFolderNode = NULL;
     if(serverNode) {
         rcbFolderNode = dslink_node_get_path(serverNode,BRCB_FOLDER_NODE_KEY);
-        if(!rcbFolderNode)
+        if(!rcbFolderNode) {
             log_info("BRCB Folder node couldn't be found!\n");
+        }
     }
 
     return rcbFolderNode;
@@ -351,8 +353,9 @@ void rcbDatSetNodeOpenAction(DSLink *link, DSNode *node) {
     (void) link;
 
     char dataSetListEnumStr[1000] = "enum[";
-    if(!getDataSetListEnumStrForRCB(node,dataSetListEnumStr))
+    if(!getDataSetListEnumStrForRCB(node,dataSetListEnumStr)) {
         log_info("No Data Set!\n");
+    }
 
     //log_info("dataset enum: %s\n",dataSetListEnumStr);
 

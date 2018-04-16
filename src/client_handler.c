@@ -9,8 +9,7 @@
 #include "iec61850_server_defs.h"
 #include "dataset_handler.h"
 #include "report_handler.h"
-#include <mms_value_internal.h>
-#include <ied_connection_private.h>
+#include <mms_value.h>
 #include <string_utilities.h>
 #include "client_handler.h"
 #include "server_status.h"
@@ -347,7 +346,7 @@ void handleControllableNode(DSLink *link, DSNode *node, IedConnection con, const
 
 void setValueNodeFromMMS(DSLink *link, DSNode *valNode, MmsValue *mmsVal) {
 
-        switch(mmsVal->type) {
+      switch(MmsValue_getType(mmsVal)) {
             case MMS_INTEGER:
             case MMS_UNSIGNED:
                 if (dslink_node_set_value(link, valNode, json_integer(MmsValue_toInt64(mmsVal))) != 0) {
@@ -1218,7 +1217,7 @@ discoverDataDirectory(DSLink *link, DSNode *node, char *doRef, IedConnection con
         }
 
         while (dataAttributeFC != NULL) {
-            char *daName = copyString((const char*)dataAttributeFC->data);
+            char *daName = StringUtils_copyString((const char*)dataAttributeFC->data);
             char *tempPtr = strchr(daName,'[');
             if(tempPtr)
                 *tempPtr = '\0';

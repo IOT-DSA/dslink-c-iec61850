@@ -122,8 +122,9 @@ DSNode *getDANode(DSNode *node, const char* daRefWithFC) {
         }
 
     }
-    if(!scanNode)
+    if(!scanNode) {
         log_info("DA Node couldn't be found!\n");
+    }
 
     return scanNode;
 }
@@ -133,8 +134,9 @@ DSNode *getMainDatasetNode(DSNode *node) {
     DSNode *datasetNode = NULL;
     if(serverNode) {
         datasetNode = dslink_node_get_path(serverNode,DATASET_FOLDER_NODE_KEY);
-        if(!datasetNode)
+        if(!datasetNode) {
             log_info("Data Set node not found!\n");
+        }
     }
 
     return datasetNode;
@@ -144,8 +146,9 @@ DSNode *getMainPrepDatasetNode(DSNode *node) {
     DSNode *datasetNode = NULL;
     if(serverNode) {
         datasetNode = dslink_node_get_path(serverNode,DATASET_PREP_FOLDER_NODE_KEY);
-        if(!datasetNode)
+        if(!datasetNode) {
             log_info("prep dataset node couldn't be found!\n");
+        }
     }
 
     return datasetNode;
@@ -157,8 +160,9 @@ DSNode *getDataSetNodeFromRef(DSNode *node, const char* dataSetRef) {
     StringUtils_replace(dsRef,'/','$');
     //log_info("getDataSetNodeFromRef: %s\n",dsRef);
     DSNode *dataSetNode = dslink_node_get_path(getMainDatasetNode(node),dsRef);
-    if(!dataSetNode)
+    if(!dataSetNode) {
         log_info("DataSet Node not found!\n");
+    }
     return dataSetNode;
 }
 void removeDatasetNode(DSLink *link, DSNode *datasetNode) {
