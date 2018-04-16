@@ -164,7 +164,7 @@ DSNode *getDataSetNodeFromRef(DSNode *node, const char* dataSetRef) {
 void removeDatasetNode(DSLink *link, DSNode *datasetNode) {
     DSNode *datasetFolderNode = datasetNode->parent;
 
-    ref_t *n = dslink_map_remove_get(datasetFolderNode->children, datasetNode->name);
+    ref_t *n = dslink_map_remove_get(datasetFolderNode->children, (char*)datasetNode->name);
     if (n) {
         dslink_node_tree_free(link, n->data);
         dslink_decref(n);
@@ -173,6 +173,9 @@ void removeDatasetNode(DSLink *link, DSNode *datasetNode) {
 static
 void remove_dataset_action(DSLink *link, DSNode *node,
                            json_t *rid, json_t *params, ref_t *stream) {
+    (void)rid; 
+    (void)params; 
+    (void)stream; 
 
     IedConnection iedConn = getServerIedConnection(node);
     DSNode *datasetNode = node->parent;
@@ -325,9 +328,13 @@ static
 void rm_member_prepds_action(DSLink *link, DSNode *node,
                           json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
+
     DSNode *datasetNode = node->parent->parent;
 
-    ref_t *n = dslink_map_remove_get(datasetNode->children, node->parent->name);
+    ref_t *n = dslink_map_remove_get(datasetNode->children, (char*)node->parent->name);
     if (n) {
         dslink_node_tree_free(link, n->data);
         dslink_decref(n);
@@ -378,7 +385,7 @@ void addMemberToPrepDatasetNode(DSLink *link, DSNode *prepDSNode, const char* me
 void removePrepDS(DSLink *link, DSNode *prepDSNode) {
     DSNode *datasetNode = prepDSNode->parent;
 
-    ref_t *n = dslink_map_remove_get(datasetNode->children, prepDSNode->name);
+    ref_t *n = dslink_map_remove_get(datasetNode->children, (char*)prepDSNode->name);
     if (n) {
         dslink_node_tree_free(link, n->data);
         dslink_decref(n);
@@ -387,6 +394,10 @@ void removePrepDS(DSLink *link, DSNode *prepDSNode) {
 static
 void remove_prepds_action(DSLink *link, DSNode *node,
                                json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     removePrepDS(link, node->parent);
 //    DSNode *datasetNode = node->parent->parent;
@@ -401,13 +412,17 @@ static
 void create_ds_onserver_action(DSLink *link, DSNode *node,
                          json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
+
     DSNode *datasetNode = node->parent;
     LinkedList linkedList = LinkedList_create ();
 
     dslink_map_foreach(datasetNode->children) {
         DSNode *tempNode = (DSNode *) (entry->value->data);
         if(strncmp(tempNode->name, DATASET_ELEMENT_NODE_KEY_INIT, NODE_KEY_INIT_LEN) == 0) {
-            LinkedList_add (linkedList,json_string_value(dslink_map_get(tempNode->meta_data,"$name")->data));
+          LinkedList_add (linkedList, (void*)json_string_value(dslink_map_get(tempNode->meta_data,"$name")->data));
         }
     }
 

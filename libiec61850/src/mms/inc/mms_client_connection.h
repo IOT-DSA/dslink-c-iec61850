@@ -757,7 +757,7 @@ MmsJournalEntry_getEntryID(MmsJournalEntry self);
 const MmsValue*
 MmsJournalEntry_getOccurenceTime(MmsJournalEntry self);
 
-const LinkedList /* <MmsJournalVariable> */
+LinkedList /* <MmsJournalVariable> */
 MmsJournalEntry_getJournalVariables(MmsJournalEntry self);
 
 const char*

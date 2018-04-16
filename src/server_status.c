@@ -18,7 +18,7 @@ void serverSubbed(DSLink *link, DSNode *node) {
 
     //get iedConn from the node
     ts61850Server serverPtr;
-    if (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) {
+    if ( (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) != NULL ) {
 
         if(serverPtr->iedConn) {
             if (IedConnection_getState(serverPtr->iedConn) == IED_STATE_IDLE) {
@@ -51,6 +51,7 @@ void serverSubbed(DSLink *link, DSNode *node) {
 static
 void serverUnsubbed(DSLink *link, DSNode *node) {
     (void) link;
+    (void) node;
 #ifdef DEVEL_DEBUG
     log_info("Unsubscribed to %s\n", node->path);
 #endif

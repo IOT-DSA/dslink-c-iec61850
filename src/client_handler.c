@@ -48,7 +48,7 @@ setServerMap(DSNode *node, void *serverPtr) {
             return DSLINK_ALLOC_ERR;
         }
     }
-    if (ret = dslink_map_set(serverMap, dslink_ref(node, NULL), dslink_ref(serverPtr, NULL))) {
+    if ( (ret = dslink_map_set(serverMap, dslink_ref(node, NULL), dslink_ref(serverPtr, NULL))) != 0 ) {
         log_warn("Ied Connection Map couldn't be set!\n");
         return ret;
     }
@@ -61,6 +61,7 @@ setServerMap(DSNode *node, void *serverPtr) {
 
 static void commandTerminationHandler(void *parameter, ControlObjectClient connection)
 {
+  (void)parameter;
     LastApplError lastApplError = ControlObjectClient_getLastApplError(connection);
 
     // if lastApplError.error != 0 this indicates a CommandTermination-
@@ -75,13 +76,15 @@ static void commandTerminationHandler(void *parameter, ControlObjectClient conne
 }
 
 void setControlStVal(DSLink *link, DSNode *node, const char* doRef) {
+  (void) doRef;
+
     ref_t *tempRef;
     DSNode *currStValNode;
     DSNode *currValueNode;
-    if(tempRef = dslink_map_get(node->children,"stVal[ST]"))
+    if ( (tempRef = dslink_map_get(node->children,"stVal[ST]")) != NULL ) 
     {
         currStValNode = (DSNode*)(tempRef->data);
-        if(tempRef = dslink_map_get(currStValNode->children,DA_VALUE_REF_NODE_KEY))
+        if ( (tempRef = dslink_map_get(currStValNode->children,DA_VALUE_REF_NODE_KEY)) != NULL )
         {
             currValueNode = (DSNode*)(tempRef->data);
             nodeValueRead(link,currValueNode);
@@ -101,6 +104,9 @@ void setControlStVal(DSLink *link, DSNode *node, const char* doRef) {
 
 static void controlAction(DSLink *link, DSNode *node,
                        json_t *rid, json_t *params, ref_t *stream) {
+    (void)rid;
+    (void)stream;
+
     ref_t *tempRef;
     DSNode *currRefNode;
     tempRef = dslink_map_get(node->parent->children,DA_OBJECT_REF_NODE_KEY);
@@ -415,7 +421,7 @@ void nodeValueRead(DSLink *link, DSNode *node) {
     ref_t *tempRef;
     DSNode *currFcNode;
     DSNode *currRefNode;
-    if(tempRef = dslink_map_get(node->parent->children,"FC"))
+    if( (tempRef = dslink_map_get(node->parent->children,"FC")) != NULL ) 
     {
         currFcNode = (DSNode*)(tempRef->data);
     }
@@ -424,7 +430,7 @@ void nodeValueRead(DSLink *link, DSNode *node) {
         log_warn("Error while getting FC node\n");
         return;
     }
-    if(tempRef = dslink_map_get(node->parent->children,DA_OBJECT_REF_NODE_KEY))
+    if( (tempRef = dslink_map_get(node->parent->children,DA_OBJECT_REF_NODE_KEY)) != NULL )
     {
         currRefNode = (DSNode*)(tempRef->data);
     }
@@ -454,16 +460,21 @@ void nodeValueRead(DSLink *link, DSNode *node) {
 
 static
 void daValueReadAction(DSLink *link, DSNode *node,
-                      json_t *rid, json_t *params, ref_t *stream) {
+                       json_t *rid, json_t *params, ref_t *stream) { 
+  (void)rid;
+  (void)params;
+  (void)stream;
+
 #ifdef DEVEL_DEBUG
     log_info("value read: %s\n", node->path);
 #endif
     nodeValueRead(link,node->parent);
-
 }
 static
 void daValueWriteAction(DSLink *link, DSNode *node,
-                       json_t *rid, json_t *params, ref_t *stream) {
+                        json_t *rid, json_t *params, ref_t *stream) {
+  (void)rid;
+  (void)stream;
 #ifdef DEVEL_DEBUG
     log_info("value write: %s\n", node->parent->name);
 #endif
@@ -472,7 +483,7 @@ void daValueWriteAction(DSLink *link, DSNode *node,
     ref_t *tempRef;
     DSNode *currFcNode;
     DSNode *currRefNode;
-    if(tempRef = dslink_map_get(node->parent->parent->children,"FC"))
+    if( (tempRef = dslink_map_get(node->parent->parent->children,"FC")) != NULL )
     {
         currFcNode = (DSNode*)(tempRef->data);
     }
@@ -481,7 +492,7 @@ void daValueWriteAction(DSLink *link, DSNode *node,
         log_warn("Error while getting FC node\n");
         return;
     }
-    if(tempRef = dslink_map_get(node->parent->parent->children,DA_OBJECT_REF_NODE_KEY))
+    if ( (tempRef = dslink_map_get(node->parent->parent->children,DA_OBJECT_REF_NODE_KEY)) != NULL )
     {
         currRefNode = (DSNode*)(tempRef->data);
     }
@@ -570,11 +581,11 @@ void daValueWriteAction(DSLink *link, DSNode *node,
             }
                 break;
             case MMS_STRING:{
-                char *strValue = json_string_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
+                const char *strValue = json_string_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
 #ifdef DEVEL_DEBUG
                 log_info("write value string: %s\n", strValue);
 #endif
-                MmsValue *value = MmsValue_newMmsString(strValue);
+                MmsValue *value = MmsValue_newMmsString((char*)strValue);
                 IedConnection_writeObject(iedConn, &error, currObjRef, currFc, value);
 
                 if (error != IED_ERROR_OK){
@@ -606,7 +617,7 @@ void daValueWriteAction(DSLink *link, DSNode *node,
                 break;
             case MMS_BIT_STRING: {
                 const char *strValue = json_string_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
-                char *bitStrBuf;
+                char *bitStrBuf = NULL;
                 int bitStrSize, i;
                 bitStrSize = parseBitString(strValue,bitStrBuf);
                 if(bitStrSize) {
@@ -647,6 +658,8 @@ void daValueWriteAction(DSLink *link, DSNode *node,
 
 void
 createValueNode(DSLink *link, DSNode *parentNode, const char* daRef, IedConnection con, FunctionalConstraint _fc, MmsType _mmsType) {
+    (void)daRef;
+    (void)con;
     /*
      * create Functional Constraint node
      */
@@ -803,6 +816,7 @@ createValueNode(DSLink *link, DSNode *parentNode, const char* daRef, IedConnecti
 static
 void addDAToDSAction(DSLink *link, DSNode *node,
                         json_t *rid, json_t *params, ref_t *stream) {
+    (void)rid;
 
     const char *dsName;
 
@@ -816,7 +830,7 @@ void addDAToDSAction(DSLink *link, DSNode *node,
         char dsKey[200] = DATASET_NODE_KEY_INIT;
         strcat(dsKey,dsName);
         DSNode *mainPrepDSNode = getMainPrepDatasetNode(node);
-        DSNode *prepDatasetNode;
+        DSNode *prepDatasetNode = NULL;
         if(mainPrepDSNode) {
             prepDatasetNode = dslink_node_get_path(mainPrepDSNode,dsKey);
         }
@@ -905,6 +919,7 @@ DSNode *createDONode(DSLink *link, DSNode *lnNode, const char *doRef, const char
 }
 
 DSNode *createDANode(DSLink *link, DSNode *topNode, const char* daRef, const char *daName, const char *daNameFC, const char *fcStr, FunctionalConstraint fc, const char* mmsTypeStr) {
+    (void)daName;
     //for [FC] at the end of the DA name, comment out the above one.
     DSNode *newDANode = dslink_node_create(topNode, daNameFC, "node");
     //DSNode *newDANode = dslink_node_create(topNode, daName, "node");
@@ -1167,7 +1182,7 @@ discoverDataDirectory(DSLink *link, DSNode *node, char *doRef, IedConnection con
             ref_t *tempRef;
             DSNode *currFcNode;
             DSNode *currRefNode;
-            if(tempRef = dslink_map_get(node->children,"FC"))
+            if( (tempRef = dslink_map_get(node->children,"FC")) != NULL ) 
             {
                 currFcNode = (DSNode*)(tempRef->data);
             }
@@ -1176,7 +1191,7 @@ discoverDataDirectory(DSLink *link, DSNode *node, char *doRef, IedConnection con
                 log_warn("Error while getting FC node\n");
                 return;
             }
-            if(tempRef = dslink_map_get(node->children,DA_OBJECT_REF_NODE_KEY))
+            if( (tempRef = dslink_map_get(node->children,DA_OBJECT_REF_NODE_KEY)) != NULL )
             {
                 currRefNode = (DSNode*)(tempRef->data);
             }
@@ -1263,6 +1278,8 @@ connect_61850_ied(IedConnection con, const char *hostname, int tcpPort) {
 static
 void prepare_dataset_action(DSLink *link, DSNode *node,
                      json_t *rid, json_t *params, ref_t *stream) {
+    (void)rid;
+    (void)stream;
 
     const char *name;
 
@@ -1276,7 +1293,7 @@ void prepare_dataset_action(DSLink *link, DSNode *node,
 
         ref_t *tempRef;
         DSNode *currRefNode;
-        if(tempRef = dslink_map_get(node->parent->children,"Reference"))
+        if( (tempRef = dslink_map_get(node->parent->children,"Reference")) != NULL ) 
         {
             currRefNode = (DSNode*)(tempRef->data);
             const char* currObjRef = json_string_value(currRefNode->value);
@@ -1669,7 +1686,7 @@ void removeAllDataModel(DSLink *link, DSNode *node) {
         }
 
         if(strncmp(tempNode->name, NO_DELETE_NODE_KEY_INIT, NODE_KEY_INIT_LEN) != 0) {
-            nodeToRemove = dslink_map_remove_get(node->children, tempNode->name);
+          nodeToRemove = dslink_map_remove_get(node->children, (char*)tempNode->name);
         }
     }
 
@@ -1684,7 +1701,7 @@ bool removeServerNode(DSLink *link, DSNode *serverNode) {
 
     //TODO: type cast warning
     //void *key = serverNode->name;
-    ref_t *n = dslink_map_remove_get(rootNode->children, serverNode->name);
+    ref_t *n = dslink_map_remove_get(rootNode->children, (char*)serverNode->name);
     if (n) {
         //remove and get iec61850 server from serverMap
         ref_t *iec61850ServerRef = dslink_map_remove_get(serverMap, serverNode);
@@ -1702,9 +1719,12 @@ static
 void edit_server_action(DSLink *link, DSNode *node,
                         json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     ts61850Server serverPtr;
-    if (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) {
+    if ( (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) != NULL ) {
 #ifdef DEVEL_DEBUG
         log_info("edit_server_action: iedconn host:%s port:%d\n", serverPtr->hostname, serverPtr->tcpPort);
 #endif
@@ -1836,7 +1856,7 @@ void discover_action(DSLink *link, DSNode *node,
 
     if(!isDiscovered(node->parent)) {
         ts61850Server serverPtr;
-        if (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) {
+        if ( (serverPtr = (ts61850Server) (dslink_map_get(serverMap, (node->parent))->data)) != NULL ) {
             discover61850Server(link, node->parent, serverPtr->iedConn);
         } else {
             log_warn("Getting server from map failed!\n");

@@ -14,6 +14,7 @@ void invokeAddServer(DSLink *link, DSNode *node,
 
     (void) node;
     (void) params;
+    (void) rid;
     (void) stream_ref;
 
     log_info("invokeAddServer\n");

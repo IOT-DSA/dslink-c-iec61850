@@ -1702,7 +1702,7 @@ MmsJournalEntry_getOccurenceTime(MmsJournalEntry self)
     return self->occurenceTime;
 }
 
-const LinkedList /* <MmsJournalVariable> */
+LinkedList /* <MmsJournalVariable> */
 MmsJournalEntry_getJournalVariables(MmsJournalEntry self)
 {
     return self->journalVariables;
