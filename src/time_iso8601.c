@@ -20,13 +20,13 @@ uint64_t parseIso8601Generic (char *text, time_t *isotime, char *flag) {
 
     struct tm tmstruct;
 
-    int year = 0;
-    int month = 0;
-    int seconds = 0;
-    int minutes = 0;
-    int hours = 0;
-    int days = 0;
-    int mseconds = 0;
+    unsigned int year = 0;
+    unsigned int month = 0;
+    unsigned int seconds = 0;
+    unsigned int minutes = 0;
+    unsigned int hours = 0;
+    unsigned int days = 0;
+    unsigned int mseconds = 0;
     uint64_t totalTimeMs = 0;
 
     int dateflags = 0;   /* flag which date component we've seen */
@@ -123,9 +123,9 @@ uint64_t parseIso8601Generic (char *text, time_t *isotime, char *flag) {
         } else if (*c == 'T') {
 /* time of day part */
             c++;
-            if (sscanf(c, "%2d%2d", &hours, &minutes) == 2) {
+            if (sscanf(c, "%2u%2u", &hours, &minutes) == 2) {
                 c += 4;
-            } else if (sscanf(c, "%2d:%2d", &hours, &minutes) == 2) {
+            } else if (sscanf(c, "%2u:%2u", &hours, &minutes) == 2) {
                 c += 5;
             } else {
                 return 0;
@@ -136,7 +136,7 @@ uint64_t parseIso8601Generic (char *text, time_t *isotime, char *flag) {
             }
 
             if (*c != '\0') {
-                if (sscanf(c, "%2d", &seconds) == 1) {
+                if (sscanf(c, "%2u", &seconds) == 1) {
                     c += 2;
                 } else {
                     return 0;
@@ -155,7 +155,7 @@ uint64_t parseIso8601Generic (char *text, time_t *isotime, char *flag) {
             }
             else if(*c == '.') {
                 c += 1;
-                if (sscanf(c, "%3d", &mseconds) == 1) {
+                if (sscanf(c, "%3u", &mseconds) == 1) {
                     c += 3;
                     totalTimeMs = (*isotime * 1000) + mseconds;
                 } else {
@@ -178,20 +178,19 @@ uint64_t parseIso8601Generic (char *text, time_t *isotime, char *flag) {
 }
 
 uint64_t parseIso8601 (const char *text) {
-    char *c;
-    int num;
+    const char *c;
 
     struct tm tmstruct;
 
     time_t isotime;
 
-    int year = 0;
-    int month = 0;
-    int seconds = 0;
-    int minutes = 0;
-    int hours = 0;
-    int days = 0;
-    int mseconds = 0;
+    unsigned int year = 0;
+    unsigned int month = 0;
+    unsigned int seconds = 0;
+    unsigned int minutes = 0;
+    unsigned int hours = 0;
+    unsigned int days = 0;
+    unsigned int mseconds = 0;
     uint64_t totalTimeMs = 0;
 
     c = text;
@@ -231,9 +230,9 @@ uint64_t parseIso8601 (const char *text) {
     } else if (*c == 'T') {
 /* time of day part */
         c++;
-        if (sscanf(c, "%2d%2d", &hours, &minutes) == 2) {
+        if (sscanf(c, "%2u%2u", &hours, &minutes) == 2) {
             c += 4;
-        } else if (sscanf(c, "%2d:%2d", &hours, &minutes) == 2) {
+        } else if (sscanf(c, "%2u:%2u", &hours, &minutes) == 2) {
             c += 5;
         } else {
             return 0;
@@ -244,7 +243,7 @@ uint64_t parseIso8601 (const char *text) {
         }
 
         if (*c != '\0') {
-            if (sscanf(c, "%2d", &seconds) == 1) {
+            if (sscanf(c, "%2u", &seconds) == 1) {
                 c += 2;
             } else {
                 return 0;
@@ -259,7 +258,7 @@ uint64_t parseIso8601 (const char *text) {
             totalTimeMs = isotime * 1000;
         } else if (*c == '.') {
             c += 1;
-            if (sscanf(c, "%3d", &mseconds) == 1) {
+            if (sscanf(c, "%3u", &mseconds) == 1) {
                 c += 3;
                 totalTimeMs = (isotime * 1000) + mseconds;
             } else {
@@ -303,19 +302,19 @@ char *getUtcTimeString(uint64_t msTime, char *buffer)
 
     gmtime_r(&unixTime, &tmTime);
 
-    Conversions_intToStringBuffer(tmTime.tm_year + 1900, 4, buffer);
+    Conversions_intToStringBuffer(tmTime.tm_year + 1900, 4, (uint8_t*)buffer);
     buffer[4] = '-';
-    Conversions_intToStringBuffer(tmTime.tm_mon + 1, 2, buffer + 5);
+    Conversions_intToStringBuffer(tmTime.tm_mon + 1, 2, (uint8_t*)buffer + 5);
     buffer[7] = '-';
-    Conversions_intToStringBuffer(tmTime.tm_mday, 2, buffer + 8);
+    Conversions_intToStringBuffer(tmTime.tm_mday, 2, (uint8_t*)buffer + 8);
     buffer[10] = 'T';
-    Conversions_intToStringBuffer(tmTime.tm_hour, 2, buffer + 11);
+    Conversions_intToStringBuffer(tmTime.tm_hour, 2, (uint8_t*)buffer + 11);
     buffer[13] = ':';
-    Conversions_intToStringBuffer(tmTime.tm_min, 2, buffer + 14);
+    Conversions_intToStringBuffer(tmTime.tm_min, 2, (uint8_t*)buffer + 14);
     buffer[16] = ':';
-    Conversions_intToStringBuffer(tmTime.tm_sec, 2, buffer + 17);
+    Conversions_intToStringBuffer(tmTime.tm_sec, 2, (uint8_t*)buffer + 17);
     buffer[19] = '.';
-    Conversions_intToStringBuffer(msPart, 3, buffer + 20);
+    Conversions_intToStringBuffer(msPart, 3, (uint8_t*)buffer + 20);
     buffer[23] = 'Z';
     buffer[24] = 0;
 

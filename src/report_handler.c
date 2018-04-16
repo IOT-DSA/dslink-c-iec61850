@@ -77,8 +77,9 @@ DSNode *getURCBFolderNode(DSNode *node) {
     DSNode *rcbFolderNode = NULL;
     if(serverNode) {
         rcbFolderNode = dslink_node_get_path(serverNode,URCB_FOLDER_NODE_KEY);
-        if(!rcbFolderNode)
+        if(!rcbFolderNode) {
             log_info("URCB Folder node couldn't be found!\n");
+        }
     }
 
     return rcbFolderNode;
@@ -88,8 +89,9 @@ DSNode *getBRCBFolderNode(DSNode *node) {
     DSNode *rcbFolderNode = NULL;
     if(serverNode) {
         rcbFolderNode = dslink_node_get_path(serverNode,BRCB_FOLDER_NODE_KEY);
-        if(!rcbFolderNode)
+        if(!rcbFolderNode) {
             log_info("BRCB Folder node couldn't be found!\n");
+        }
     }
 
     return rcbFolderNode;
@@ -170,7 +172,8 @@ DSNode* createSubNodes(DSLink *link, DSNode *mainNode, const char* key, const ch
 
     return subNode;
 }
-void rcbDeleter(ClientReportControlBlock rcb) {
+void rcbDeleter(void* ptr) {
+    ClientReportControlBlock rcb = (ClientReportControlBlock)ptr; 
     ClientReportControlBlock_destroy(rcb);
 }
 void setNodeRCBValues(DSLink *link, DSNode *rcbNode, ClientReportControlBlock rcb) {
@@ -205,6 +208,10 @@ static
 void readRCBAction(DSLink *link, DSNode *node,
                            json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
+
     IedConnection iedConn = getServerIedConnection(node);
     DSNode *rcbNode = node->parent;
     const char *rcbRef = json_string_value(dslink_node_get_path(rcbNode,RCB_OBJ_REF_KEY)->value);
@@ -226,6 +233,11 @@ void readRCBAction(DSLink *link, DSNode *node,
 static
 void forceGIRCBAction(DSLink *link, DSNode *node,
                    json_t *rid, json_t *params, ref_t *stream) {
+  (void)link;
+  (void)rid;
+  (void)params;
+  (void)stream;
+
 
     IedConnection iedConn = getServerIedConnection(node);
     DSNode *rcbNode = node->parent;
@@ -247,6 +259,10 @@ void forceGIRCBAction(DSLink *link, DSNode *node,
 static
 void setRptEnaAction(DSLink *link, DSNode *node,
                      json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     bool boolValue = json_boolean_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
     IedConnection iedConn = getServerIedConnection(node);
@@ -273,6 +289,10 @@ void setRptEnaAction(DSLink *link, DSNode *node,
 static
 void setRptIdAction(DSLink *link, DSNode *node,
                      json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     const char *entValue = json_string_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
     IedConnection iedConn = getServerIedConnection(node);
@@ -302,6 +322,10 @@ static
 void setDatSetAction(DSLink *link, DSNode *node,
                     json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
+
     const char *entValue = json_string_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
     IedConnection iedConn = getServerIedConnection(node);
     DSNode *rcbNode = node->parent->parent;
@@ -329,8 +353,9 @@ void rcbDatSetNodeOpenAction(DSLink *link, DSNode *node) {
     (void) link;
 
     char dataSetListEnumStr[1000] = "enum[";
-    if(!getDataSetListEnumStrForRCB(node,dataSetListEnumStr))
+    if(!getDataSetListEnumStrForRCB(node,dataSetListEnumStr)) {
         log_info("No Data Set!\n");
+    }
 
     //log_info("dataset enum: %s\n",dataSetListEnumStr);
 
@@ -349,6 +374,10 @@ void rcbDatSetNodeOpenAction(DSLink *link, DSNode *node) {
 static
 void setBufTmAction(DSLink *link, DSNode *node,
                     json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     uint32_t entValue = (uint32_t)json_integer_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
     IedConnection iedConn = getServerIedConnection(node);
@@ -379,6 +408,10 @@ static
 void setIntgPdAction(DSLink *link, DSNode *node,
                     json_t *rid, json_t *params, ref_t *stream) {
 
+    (void)rid;
+    (void)params;
+    (void)stream;
+
     uint32_t entValue = (uint32_t)json_integer_value(json_object_get(params, DA_VALUE_REF_NODE_KEY));
     IedConnection iedConn = getServerIedConnection(node);
     DSNode *rcbNode = node->parent->parent;
@@ -406,6 +439,10 @@ void setIntgPdAction(DSLink *link, DSNode *node,
 static
 void setOptFldsAction(DSLink *link, DSNode *node,
                      json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     int optFlds = 0;
     if(json_boolean_value(json_object_get(params, "SEQ_NUM")))
@@ -451,6 +488,10 @@ void setOptFldsAction(DSLink *link, DSNode *node,
 static
 void setTrgOpsAction(DSLink *link, DSNode *node,
                       json_t *rid, json_t *params, ref_t *stream) {
+
+    (void)rid;
+    (void)params;
+    (void)stream;
 
     int trgOps = 0;
     if(json_boolean_value(json_object_get(params, "QUALITY_CHANGED")))

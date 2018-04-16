@@ -59,7 +59,7 @@ IedConnection getServerIedConnection(DSNode *node) {
     node = getServerNode(node);
     if (node) {
         ts61850Server serverPtr;
-        if (serverPtr = (ts61850Server) (dslink_map_get(serverMap, node)->data)) {
+        if ( (serverPtr = (ts61850Server) (dslink_map_get(serverMap, node)->data)) != NULL ) {
             return serverPtr->iedConn;
         }
     }
@@ -166,7 +166,7 @@ FunctionalConstraint getFunctionalConstraint(const char *daRef, char *fcStr) {
 //        } else {
 //            return IEC61850_FC_NONE;
 //        }
-        FunctionalConstraint_fromString(fcStr);
+        return FunctionalConstraint_fromString(fcStr);
     } else
         return IEC61850_FC_NONE;
 }
@@ -211,8 +211,8 @@ int parseBitString(const char *rawString, char *bitStrBuf) {
             }
 
         }
-    } else
-        return 0;
+    } 
+    return 0;
 }
 
 DSLink *getDSLink(DSNode *node) {
